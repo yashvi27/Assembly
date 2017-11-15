@@ -8,11 +8,13 @@ data segment
     matrix2 db 01h, 02h
             db 03h, 04h
                            
-    result dw 4 dup(?)
+    result db 4 dup(?)
     
     row1 db 2h
     col1 db 2h
-    col2 db 2h
+    col2 db 2h   
+    temp db 0 
+    res db 0
     
 data ends
 
@@ -37,20 +39,29 @@ code segment
         mov di,0
         push cx
         mov cx,0
-        mov cl, col1
-            loop3:
-            mov al,matrix1[bx][di] 
-            mov dx,bx
-            mov bx,di
-            mul matrix2[bx][si]
+        mov cl, col1  
+        push si
+            loop3:    
+            mov al,matrix1[bx][di]
+            push bx    
             mov bx,dx
-            add result[bx][si],ax
-            inc di          
-            loop loop3        
-        inc si
+            mul matrix2[bx][si] 
+            pop bx
+            add res,al
+            inc di  
+            add si,2        
+            loop loop3       
+        pop si    
+        mov temp,dl
+        mov dl,res
+        mov result[bx][si],dl
+        mov dl,temp    
+        mov res, 0
+        inc si    
         pop cx
-        loop loop2
-    inc bx
+        loop loop2    
+    add bx,2
+    mov dx,0
     pop cx
     loop loop1
     
